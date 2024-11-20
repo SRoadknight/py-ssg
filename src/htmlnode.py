@@ -40,6 +40,8 @@ class LeafNode(HTMLNode):
         if self.tag in SELF_CLOSING:
             return f"<{self.tag}{html_props} />"
         return f"<{self.tag}{html_props}>{self.value}</{self.tag}>"
+    def __repr__(self):
+        return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
 
 from htmlnode import HTMLNode 
@@ -58,4 +60,7 @@ class ParentNode(HTMLNode):
         for child in self.children:
            s += child.to_html()
         return s + f"</{self.tag}>"
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
+
 
