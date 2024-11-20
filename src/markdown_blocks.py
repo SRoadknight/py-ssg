@@ -1,5 +1,6 @@
 from htmlnode import ParentNode, LeafNode
 from inline_markdown import text_to_textnodes
+from textnode import text_type_map_html, TextType
 from enum import Enum
 
 
@@ -85,34 +86,52 @@ def text_to_children(text):
 
 
 def text_node_to_html_node(text_node):
-    match text_node.text_type:
-        case "normal":
-            return LeafNode(tag=None, value=text_node.text)
-        case "bold":
-            children = text_to_children(text_node.text)
-            if children:
-                return ParentNode("strong", children)
-            return LeafNode(tag="strong", value=text_node.text)
-        case "italic":
-            children = text_to_children(text_node.text)
-            if children:
-                return ParentNode("em", children)
-            return LeafNode(tag="em", value=text_node.text)
-        case "code":
-            return LeafNode(tag="code", value=text_node.text)
-        case "link":
-            if not text_node.url: 
-                raise ValueError("Url not entered")
-            return LeafNode(tag="a", value=text_node.text, props={"href": text_node.url})
-        case "image":
-            if not text_node.url:
-                raise ValueError("Url not entered")
-            return LeafNode(tag="img", value="", props={
-                "src": text_node.url, 
-                "alt": text_node.text
-            })
-        case _:
-            raise ValueError("Invalid tag")
+    if text_node.is_leaf():
+        match text_node.text_type:
+            case TextType.TEXT:
+                return LeafNode(tag=None, value=text_node.text)
+            case TextType.LINK:
+                if not text_node.url: 
+                    raise ValueError("Url not entered")
+                return LeafNode(tag="a", value=text_node.text, props={"href": text_node.url})
+            case TextType.IMAGE:
+                if not text_node.url:
+                    raise ValueError("Url not entered")
+                return LeafNode(tag="img", value="", props={
+                    "src": text_node.url, 
+                    "alt": text_node.text
+                })
+            case _:
+                return LeafNode(tag=text_type_map_html[text_node.text_type], value=text_node.text)
+    
+    children = [text_node_to_html_node(child) for child in text_node.children]
+    return ParentNode(tag=text_type_map_html[text_node.text_type], children=children, props=None)
+
+
+    # match text_node.text_type:
+    #     case "normal":
+    #         return LeafNode(tag=None, value=text_node.text)
+    #     case "bold_italic":
+    #         return LeafNode(tag="strong", value=text_node.text)
+    #     case "bold":
+    #         return LeafNode(tag="strong", value=text_node.text)
+    #     case "italic":
+    #         return LeafNode(tag="em", value=text_node.text)
+    #     case "code":
+    #         return LeafNode(tag="code", value=text_node.text)
+    #     case "link":
+    #         if not text_node.url: 
+    #             raise ValueError("Url not entered")
+    #         return LeafNode(tag="a", value=text_node.text, props={"href": text_node.url})
+    #     case "image":
+    #         if not text_node.url:
+    #             raise ValueError("Url not entered")
+    #         return LeafNode(tag="img", value="", props={
+    #             "src": text_node.url, 
+    #             "alt": text_node.text
+    #         })
+    #     case _:
+    #         raise ValueError("Invalid tag")
 
 
 

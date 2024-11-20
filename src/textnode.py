@@ -1,5 +1,4 @@
 from enum import Enum 
-from htmlnode import LeafNode, ParentNode
 
 class TextType(Enum):
     TEXT = "normal"
@@ -9,11 +8,24 @@ class TextType(Enum):
     LINK = "link"
     IMAGE = "image"
 
+text_type_map_html = {
+    TextType.TEXT: None,
+    TextType.BOLD: "strong",
+    TextType.ITALIC: "em",
+    TextType.CODE: "code",
+    TextType.LINK: "a",
+    TextType.IMAGE: "img",
+}
+
 class TextNode():
-    def __init__(self, text, text_type, url=None):
+    def __init__(self, text="", text_type=TextType.TEXT, children=None, url=None):
         self.text = text if text else ""
-        self.text_type = text_type.value
+        self.text_type = text_type
+        self.children = children if children else []
         self.url = url 
+
+    def is_leaf(self):
+        return not self.children
     
     def __eq__(self, other):
         return (
@@ -23,5 +35,6 @@ class TextNode():
         )
     
     def __repr__(self):
-        return f"TextNode({self.text}, {self.text_type}, {self.url})"
-
+        if self.is_leaf():
+            return f"TextNode({self.text}, {self.text_type}, {self.url})"
+        return f"TextNode({self.text}, {self.text_type}, {self.url}, {self.children})"
