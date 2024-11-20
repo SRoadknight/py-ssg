@@ -15,7 +15,6 @@ def parse_inline(text):
     i  = 0
 
     while i < len(text):
-        # Deal with closing italics and bolds in the correct order (if italic is inside bold, close italic first)
         if text[i:i+3] == "***" or text[i:i+2] == "**" or text[i] == "*":
             if buffer:
                 if stack:
@@ -23,15 +22,12 @@ def parse_inline(text):
                 else:
                     result.append(TextNode(text=buffer))
                 buffer = ""
-            
-            # Closing italic inside bold (add italic to bold children) then closing bold
             if len(stack) == 2 and text[i:i+3] == "***" and stack[-1].text_type == TextType.ITALIC and stack[-2].text_type == TextType.BOLD:
                 node = stack.pop()
                 stack[-1].children.append(node)
                 node = stack.pop()
                 result.append(node)
                 i += 3
-            # Closing bold or italic (match with opening bold or italic)
             elif stack and stack[-1].text_type == (TextType.BOLD if text[i:i+2] == "**" else TextType.ITALIC):
                 node = stack.pop()
                 if stack:
@@ -39,22 +35,17 @@ def parse_inline(text):
                 else:
                     result.append(node)
                 i += 2 if text[i:i+2] == "**" else 1
-            # Opening bold or italic
             else:
                 stack.append(TextNode(text_type=TextType.BOLD if text[i:i+2] == "**" else TextType.ITALIC))
-                i += 2 if text[i:i+2] == "**" else 1
-        # Adding text to buffer        
+                i += 2 if text[i:i+2] == "**" else 1      
         else:
             buffer += text[i]
             i += 1
-
-    # Flush buffer
     if buffer:
         if stack:
             stack[-1].children.append(TextNode(text=buffer))
         else:
             result.append(TextNode(text=buffer))
-    # Close all unclosed bolds and italics
     while stack:
         node = stack.pop()
         if stack:

@@ -107,34 +107,6 @@ def text_node_to_html_node(text_node):
     children = [text_node_to_html_node(child) for child in text_node.children]
     return ParentNode(tag=text_type_map_html[text_node.text_type], children=children, props=None)
 
-
-    # match text_node.text_type:
-    #     case "normal":
-    #         return LeafNode(tag=None, value=text_node.text)
-    #     case "bold_italic":
-    #         return LeafNode(tag="strong", value=text_node.text)
-    #     case "bold":
-    #         return LeafNode(tag="strong", value=text_node.text)
-    #     case "italic":
-    #         return LeafNode(tag="em", value=text_node.text)
-    #     case "code":
-    #         return LeafNode(tag="code", value=text_node.text)
-    #     case "link":
-    #         if not text_node.url: 
-    #             raise ValueError("Url not entered")
-    #         return LeafNode(tag="a", value=text_node.text, props={"href": text_node.url})
-    #     case "image":
-    #         if not text_node.url:
-    #             raise ValueError("Url not entered")
-    #         return LeafNode(tag="img", value="", props={
-    #             "src": text_node.url, 
-    #             "alt": text_node.text
-    #         })
-    #     case _:
-    #         raise ValueError("Invalid tag")
-
-
-
 def paragraph_to_html_node(block):
     lines = block.split("\n")
     paragraph = " ".join(lines)
