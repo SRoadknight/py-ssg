@@ -20,9 +20,6 @@ class HTMLNode():
         return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
 
 
-
-from htmlnode import HTMLNode 
-
 SELF_CLOSING = {"img"}
 
 class LeafNode(HTMLNode):
@@ -43,8 +40,6 @@ class LeafNode(HTMLNode):
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
-
-from htmlnode import HTMLNode 
 
 class ParentNode(HTMLNode):
     def __init__(self, tag=None, children=[], props=None):
